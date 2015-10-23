@@ -1,11 +1,11 @@
-/* global phantom,require,setTimeout */
+/* global phantom,require,setTimeout,setInterval,clearInterval */
 
 var system = require("system");
 var args = system.args;
 var length = args.length;
 
 if(length === 1){
-    console.log("Usage: phantomjs screenshot.js <URL1 URL2 URL3...>");
+    console.log("Usage: phantomjs video.js <URL1 URL2 URL3...>");
     end();
 }else{
     // Iterate over URLs
@@ -15,7 +15,7 @@ if(length === 1){
         
         if(i > 0){
             // For debugging purposes
-            page.onResourceError = function(resourceError){
+            page.onResourceError = function(resourceError) {
                 page.reason = resourceError.errorString;
             };
             console.log(i + ': ' + arg);
@@ -24,7 +24,7 @@ if(length === 1){
             
             //Open URL
             page.open(arg, function(status){
-                if (status !== "success"){
+                if (status !== "success") {
                     console.log("Address: " + arg + ", " + page.reason + " status: " + status);
                     
                     if(length === (i+1)){
@@ -33,16 +33,40 @@ if(length === 1){
                 }else{
                     // Add a little delay before capturing the image
                     setTimeout(function(){
-                        page.render("screenshot-" + i + ".png", {format: "png"});
-                        
-                        if(length === (i+1)){
-                            end();//end program
-                        }
+                        // Initial frame
+                        var frame = 0;
+                        // Add an interval every 25th second
+                        var intervalId = setInterval(function(){
+                            page.render("frames/" + i + "/screenshot-" + (frame < 10 ? "0"+frame : frame) + ".png", {format: "png"});
+                            
+                            if(frame > 100){
+                                if(length === (i+1)){
+                                    end();//end program
+                                }
+                                stopInterval(intervalId);//stop interval
+                            }
+                            frame++;
+                        }, 20);
                     }, 2000);
                 }
             });
         }
     });
+}
+
+/**
+ * Ends the program
+ */
+function end(){
+    phantom.exit();
+}
+
+/**
+ * Clears a given interval
+ * @param 
+ */
+function stopInterval(intervalId){
+    clearInterval(intervalId);
 }
 
 /**
@@ -58,11 +82,4 @@ function getCredentials(page){
     
     page.settings.userName = user;
     page.settings.password = password;
-}
-
-/**
- * Ends the program
- */
-function end(){
-    phantom.exit();
 }
