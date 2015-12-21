@@ -1,0 +1,19 @@
+{
+    authentication: {
+        required: true,
+        global: true,
+        user: "",
+        password: ""
+    },
+    frames: 100,
+    urls: [
+        {
+            url: "http://www.google.com"
+        },
+        {
+            url: "http://www.yahoo.com",
+            user: "test",
+            password: "my password"
+        }
+    ]
+}

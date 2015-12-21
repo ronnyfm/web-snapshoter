@@ -28,7 +28,7 @@ if(length === 1){
                     console.log("Address: " + arg + ", " + page.reason + " status: " + status);
                     
                     if(length === (i+1)){
-                            end();//end program
+                        end();//end program
                     }
                 }else{
                     // Add a little delay before capturing the image
